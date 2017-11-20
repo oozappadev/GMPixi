@@ -1,0 +1,26 @@
+{
+  "name": "gmpixi",
+  "version": "1.0.0",
+  "keywords": [
+    "util",
+    "functional",
+    "server",
+    "client",
+    "browser"
+  ],
+  "author": "LetumFalx",
+  "contributors": [],
+  "dependencies": {},
+  "devDependencies": {
+    "pixi.js": "^4.6.0",
+    "webpack": "^3.8.1"
+  },
+  "description": "A extended library of PixiJS for game making.",
+  "main": "./lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "webpack --progress",
+    "watch": "webpack --progress --watch"
+  },
+  "license": "ISC"
+}
