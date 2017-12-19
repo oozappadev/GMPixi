@@ -60,6 +60,8 @@ typings/
 #neatbeans project configs
 nbproject/
 
-
 #distribution folder
 dist/
+
+#lock files
+package-lock.json
