@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "watch": "webpack --progress --watch",
-    "test": "node test/test.js"
+    "test": "set NODE_ENV=debug & (start \"\" cmd /c php -S localhost:8080 -t ./test) & webpack --progress --watch",
+    "build": "set NODE_ENV=production & webpack --progress --watch"
   },
   "repository": {
     "type": "git",

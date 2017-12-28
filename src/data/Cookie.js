@@ -66,14 +66,14 @@ Object.defineProperty(Cookie, 'set', {
   }
 });
 
-Object.defineProperties(Cookie, 'add', {
+Object.defineProperty(Cookie, 'insert', {
   enumerable: true,
   get: function() {
     return Cookie.set;
   }
 });
 
-Object.defineProperty(Cookie, 'insert', {
+Object.defineProperty(Cookie, 'add', {
   enumerable: true,
   get: function() {
     return Cookie.set;

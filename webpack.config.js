@@ -9,8 +9,8 @@ module.exports = {
   devtool: debug ? "inline-sourcemap" : null,
   entry: "./index.js",
   output: {
-    path: path.join(__dirname, "./dist"),
-    filename: debug ? "gmpixi.js" : "gmpixi.min.js"
+    path: path.join(__dirname, debug ? "./test" : "./dist"),
+    filename: "gmpixi.js"
   },
   plugins: debug ? [] : [
     new webpack.optimize.OccurenceOrderPlugin(),
