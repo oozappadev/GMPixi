@@ -34,8 +34,7 @@ Object.defineProperty(array, 'shuffle', {
   get: function() {
     return array.randomize;
   }
-})
-
+});
 
 module.exports = array;
 

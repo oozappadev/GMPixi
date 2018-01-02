@@ -1,7 +1,7 @@
 
 var Cookie = Object.create(null);
 
-var undefined;
+var undefined = require('./../../utils/core').undefined;
 
 Object.defineProperty(Cookie, 'enabled', {
   enumerable: true,

@@ -37,6 +37,34 @@ function Point(x, y) {
 
 Object.defineProperty(Point, 'prototype', {
   value: Object.defineProperties(Object.create(null), {
+    set: {
+      enumerable: true,
+      value: function set() {
+        var a = arguments[0];
+        if(typeof a === 'undefined' || a === null) {
+          return;
+        }
+
+        var x, y;
+        if(Array.isArray(a)) {
+          if(Number.isNaN(x = Number(a[0])) || Number.isNaN(y = Number(a[1]))) {
+            return;
+          }
+        }
+        else if(typeof a === 'object') {
+          if(Number.isNaN(x = Number(a.x)) || Number.isNaN(y = Number(a.y))) {
+            return;
+          }
+        }
+        else {
+          if(Number.isNaN(x = Number(a)) || Number.isNaN(y = Number(arguments[1]))) {
+            return;
+          }
+        }
+        this.x = x;
+        this.y = y;
+      }
+    },
     displacement: {
       enumerable: true,
       value: function displacement(x, y) {

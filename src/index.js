@@ -1,11 +1,18 @@
 
 
-var GMPixi = Object.create(null);
+var GMPixi = require('./core');
 
-Object.defineProperty(GMPixi, 'utils', {
-  enumerable: true,
-  value: require('./utils')
-});
+var utils = require('./utils');
+for(var key in utils) {
+  (function(k, v) {
+    Object.defineProperty(GMPixi, k, {
+      enumerable: true,
+      get: function() {
+        return v;
+      }
+    });
+  })(key, utils[key]);
+}
 
 Object.defineProperty(GMPixi, 'data', {
   enumerable: true,

@@ -11,5 +11,10 @@ Object.defineProperty(data, 'Json', {
   value: require('./Json')
 })
 
+Object.defineProperty(data, 'Socket', {
+  enumerable: true,
+  value: require('./Socket');
+});
+
 module.exports = data;
 

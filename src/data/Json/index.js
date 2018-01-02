@@ -1,6 +1,6 @@
 
 
-var query = require("./../utils/format/Query").stringify;
+var query = require("./../../utils/format/Query").stringify;
 
 function Json(type, path, params, success, fail, timeout) {
   if(typeof type !== "string") {
