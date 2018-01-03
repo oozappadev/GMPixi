@@ -13,7 +13,7 @@ Object.defineProperty(data, 'Json', {
 
 Object.defineProperty(data, 'Socket', {
   enumerable: true,
-  value: require('./Socket');
+  value: require('./Socket')
 });
 
 module.exports = data;
