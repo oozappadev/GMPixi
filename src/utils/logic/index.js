@@ -44,15 +44,40 @@ Object.defineProperty(logic, 'and', {
 
 Object.defineProperty(logic, 'xor', {
   enumerable: true,
-  value: function xor(a, b) {
-    return (!a && b) || (a && !b) ? true : false;
+  value: function xor() {
+    var found = false;
+    for(var i in arguments) {
+      if(arguments[i]) {
+        found = !found;
+      }
+    }
+    return found;
   }
 });
 
 Object.defineProperty(logic, 'xnor', {
   enumerable: true,
-  value: function xnor(a, b) {
-    return !logic.xor(a, b);
+  value: function xnor() {
+    return !logic.xor.apply(null, arguments);
+  }
+});
+
+Object.defineProperty(logic, 'once', {
+  enumerable: true,
+  value: function once() {
+    if(arguments.length <= 0) {
+      return false;
+    }
+    var found = false;
+    for(var i in arguments) {
+      if(arguments[i]) {
+        if(found) {
+          return false;
+        }
+        found = true;
+      }
+    }
+    return found;
   }
 });
 
