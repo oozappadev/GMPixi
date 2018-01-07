@@ -4,13 +4,9 @@ const mode = process.env.NODE_ENV;
 const webpack = require('webpack');
 const path = require('path');
 
-const commonConfig = {
-  context: path.join(__dirname, "src"),
-  entry: "./index.js"
-};
-
 const phpTest = {
-  ...commonConfig,
+  context: path.join(__dirname, "src"),
+  entry: "./index.js",
   output: {
     path: path.join(__dirname, "./test/php-test"),
     filename:  "gmpixi.js"
@@ -18,7 +14,8 @@ const phpTest = {
 };
 
 const nodeTest = {
-  ...commonConfig,
+  context: path.join(__dirname, "src"),
+  entry: "./index.js",
   output: {
     path: path.join(__dirname, "./test/node-test"),
     filename:  "gmpixi.js"
@@ -26,7 +23,8 @@ const nodeTest = {
 };
 
 const minified = {
-  ...commonConfig,
+  context: path.join(__dirname, "src"),
+  entry: "./index.js",
   output: {
     path: path.join(__dirname, "./dist"),
     filename:  "gmpixi.min.js"
@@ -41,7 +39,8 @@ const minified = {
 }
 
 const normal = {
-  ...commonConfig,
+  context: path.join(__dirname, "src"),
+  entry: "./index.js",
   output: {
     path: path.join(__dirname, "./dist"),
     filename:  "gmpixi.js"

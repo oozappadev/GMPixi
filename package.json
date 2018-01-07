@@ -10,7 +10,7 @@
     "build-test": "set NODE_ENV=debug&webpack --progress",
     "watch": "set NODE_ENV=debug&webpack --progress --watch",
     "node-test": "set NODE_ENV=node&(start \"\" cmd /c node ./test/node-test/index.js)&webpack --progress --watch",
-    "php-test": "set NODE_ENV=php&(start \"\" cmd /c php -S localhost:8080 -t ./test/php-test)&webpack --progress --watch"
+    "php-test": "set NODE_ENV=php&(start \"\" cmd /c php -S localhost:12205 -t ./test/php-test)&webpack --progress --watch"
   },
   "repository": {
     "type": "git",

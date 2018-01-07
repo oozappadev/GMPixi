@@ -1,4 +1,6 @@
 
+require('pixi.js');
+
 function Game() {
 
 }

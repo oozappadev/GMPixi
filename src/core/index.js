@@ -1,5 +1,15 @@
 
-var Game = require('./Game');
+var core = Object.create(null);
+
+Object.defineProperty(core, 'Game', {
+  enumerable: true,
+  value: require('./Game')
+});
 
 
-module.exports = Game;
+Object.defineProperty(core, 'GameObject', {
+  enumerable: true,
+  value: require('./GameObject')
+});
+
+module.exports = core;

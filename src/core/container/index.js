@@ -1,3 +1,3 @@
 
-var GameObject = require('./../object');
+var GameObject = require('./../GameObject');
 
