@@ -1,5 +1,6 @@
 
 var utils = require('./../../utils/core');
+var Game = require('./../Game');
 
 function GameObject(base, props, args) {
   if(this instanceof GameObject) {
@@ -23,6 +24,9 @@ Object.defineProperty(GameObject, 'create', {
     //get all the props that will be declared on the constructor
     if(props.construct && typeof props.construct === 'object') {
       for(var key in props.construct) {
+        if(utils.isOneOf(key, ['room', 'roomlist', 'global'])) {
+          continue;
+        }
         (function(k, v) {
           construct[k] = v;
         })(key, props.construct[key]);
@@ -35,6 +39,9 @@ Object.defineProperty(GameObject, 'create', {
         if(utils.isOneOf(key, ["setup", "reset", "room_end", "update"])) {
           construct[key] = props.proto[key];
         }
+        else if(utils.isOneOf(key, ['room', 'roomlist', 'global'])) {
+          continue;
+        }
         (function(k, v) {
           proto[k] = v;
         })(key, props.proto[key]);
@@ -43,12 +50,13 @@ Object.defineProperty(GameObject, 'create', {
 
     //others will be declared on the prototype
     for(var key in props) {
-      if(key === 'proto' || key === 'construct') {
+      if(utils.isOneOf(key, ['room', 'roomlist', 'global', 'proto', 'construct'])) {
         continue;
       }
       else if(utils.isOneOf(key, ["setup", "reset", "room_end", "update"])) {
         construct[key] = props[key];
       }
+
       (function(k, v) {
         proto[k] = v;
       })(key, props);
@@ -120,7 +128,43 @@ Object.defineProperty(GameObject, 'create', {
       return "GameObject() { [varying code] }";
     }
 
-    return Class;
+    return appendGlobal(Class);
+  }
+});
+
+var globalVar;
+
+function appendGlobal(obj) {
+  Object.defineProperty(obj, 'global', {
+    enumerable: true,
+    get: function() {
+      return globalVar;
+    }
+  });
+
+  Object.defineProperty(obj, 'room', {
+    enumerable: true,
+    get: function() {
+      return globalVar.room;
+    }
+  });
+
+  Object.defineProperty(obj, 'roomlist', {
+    enumerable: true,
+    get: function() {
+      return globalVar.roomlist;
+    }
+  });
+  
+  return obj;
+}
+
+Object.defineProperty(GameObject, 'setGlobal', {
+  enumerable: true,
+  value: function setGlobal(gl) {
+    if(gl && typeof gl === 'object') {
+      globalVar = gl;
+    }
   }
 });
 
