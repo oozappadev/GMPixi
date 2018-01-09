@@ -1,24 +1,67 @@
 
 
-const debug = process.env.NODE_ENV !== "production";
+const mode = process.env.NODE_ENV;
 const webpack = require('webpack');
 const path = require('path');
 
-module.exports = {
-  context: path.join(__dirname, "./lib"),
-  devtool: debug ? "inline-sourcemap" : null,
+const phpTest = {
+  context: path.join(__dirname, "src"),
+  entry: "./index.js",
+  output: {
+    path: path.join(__dirname, "./test/php-test"),
+    filename:  "gmpixi.js"
+  }
+};
+
+const nodeTest = {
+  context: path.join(__dirname, "src"),
+  entry: "./index.js",
+  output: {
+    path: path.join(__dirname, "./test/node-test"),
+    filename:  "gmpixi.js"
+  }
+};
+
+const minified = {
+  context: path.join(__dirname, "src"),
   entry: "./index.js",
   output: {
     path: path.join(__dirname, "./dist"),
-    filename: debug ? "gmpixi.js" : "gmpixi.min.js"
+    filename:  "gmpixi.min.js"
   },
-  plugins: debug ? [] : [
-//    new webpack.optimize.DedupePlugin(),
-    new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false })
+  plugins: [
+    new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.optimize.UglifyJsPlugin({ 
+      mangle: true, 
+      sourcemap: false
+    })
   ]
-};
+}
 
+const normal = {
+  context: path.join(__dirname, "src"),
+  entry: "./index.js",
+  output: {
+    path: path.join(__dirname, "./dist"),
+    filename:  "gmpixi.js"
+  }
+}
 
-
+module.exports = ((m) => {
+  console.log("Building for: '" + m + "'");
+  switch(m) {
+    case "production":
+      return [minified, normal];
+    case "minified":
+      return minified;
+    case "development":
+      return normal;
+    case "php":
+      return phpTest;
+    case "node":
+      return nodeTest;
+    default:
+      return [phpTest, nodeTest];
+  }
+})(mode);
 

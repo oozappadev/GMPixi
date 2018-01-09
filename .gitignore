@@ -57,9 +57,6 @@ typings/
 # dotenv environment variables file
 .env
 
-#neatbeans project configs
+#IDE config files
 nbproject/
-
-
-#distribution folder
-dist/
+.vscode
