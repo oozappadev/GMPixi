@@ -132,7 +132,7 @@ Object.defineProperty(GameObject, 'create', {
   }
 });
 
-var globalVar;
+var globalVar = {};
 
 function appendGlobal(obj) {
   Object.defineProperty(obj, 'global', {

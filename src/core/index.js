@@ -12,4 +12,14 @@ Object.defineProperty(core, 'GameObject', {
   value: require('./GameObject')
 });
 
+Object.defineProperty(core, 'Container', {
+  enumerable: true,
+  value: require('./Container')
+});
+
+Object.defineProperty(core, 'Room', {
+  enumerable: true,
+  value: require('./Room')
+});
+
 module.exports = core;

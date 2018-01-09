@@ -60,3 +60,7 @@ typings/
 #IDE config files
 nbproject/
 .vscode
+
+#compiled test files
+test/node-test/gmpixi.js
+test/php-test/gmpixi.js
