@@ -5,6 +5,7 @@ const webpack = require('webpack');
 const path = require('path');
 
 const phpTest = {
+  devtool: "inline-sourcemap",
   context: path.join(__dirname, "src"),
   entry: "./index.js",
   output: {
@@ -14,6 +15,7 @@ const phpTest = {
 };
 
 const nodeTest = {
+  devtool: "inline-sourcemap",
   context: path.join(__dirname, "src"),
   entry: "./index.js",
   output: {

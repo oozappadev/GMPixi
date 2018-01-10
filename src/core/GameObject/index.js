@@ -9,7 +9,7 @@ function GameObject(base, props, args) {
 Object.defineProperty(GameObject, 'create', {
   enumerable: true,
   value: function create(base, props, args) {
-
+    
     if(!props || typeof props !== 'object') {
       props = Object.create(null);
     }
@@ -29,6 +29,8 @@ Object.defineProperty(GameObject, 'create', {
       }
     }
 
+    
+
     //get all the props that will be declared on the prototype
     if(props.proto && typeof props.proto === 'object') {
       for(var key in props.proto) {
@@ -43,7 +45,7 @@ Object.defineProperty(GameObject, 'create', {
         }).call(proto, key, Object.getOwnPropertyDescriptor(props.proto, key));
       }
     }
-
+    
     //others will be declared on the prototype
     for(var key in props) {
       if(utils.isOneOf(key, ['room', 'roomlist', 'global', 'proto', 'construct'])) {
@@ -77,8 +79,7 @@ Object.defineProperty(GameObject, 'create', {
           Object.defineProperty(this, k, v);
         }).call(this, key, Object.getOwnPropertyDescriptor(construct, key));
       }
-
-
+      
       function callAll(_this, method, val) {
         Object.defineProperty(_this, method, {
           enumerable: true,
