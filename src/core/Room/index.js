@@ -4,14 +4,12 @@ var GameObject = require('./../GameObject');
 
 function Room(props) {
   Container.call(this);
-  var _cls = GameObject(null, props);
-  var _tmp = new _cls();
+  var _cls = new (GameObject(null, props));
 
   for(var key in _tmp) {
-    (function(k){
-      var pr = Object.getOwnPropertyDescriptor(_tmp, k);
+    (function(k, pr){
       Object.defineProperty(this, k, pr);
-    }).call(this, key);
+    }).call(this, key, Object.getOwnPropertyDescriptor(_tmp, key));
   }
 
 }

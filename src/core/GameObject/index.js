@@ -3,10 +3,6 @@ var utils = require('./../../utils/core');
 var Game = require('./../Game');
 
 function GameObject(base, props, args) {
-  if(this instanceof GameObject) {
-    throw SyntaxError("Game Object cannot be called as a constructor.");
-  }
-
   return GameObject.create(base, props, args);
 }
 
@@ -28,8 +24,8 @@ Object.defineProperty(GameObject, 'create', {
           continue;
         }
         (function(k, v) {
-          construct[k] = v;
-        })(key, props.construct[key]);
+          Object.defineProperty(this, k, v);
+        }).call(construct, key, Object.getOwnPropertyDescriptor(props.construct, key));
       }
     }
 
@@ -43,8 +39,8 @@ Object.defineProperty(GameObject, 'create', {
           continue;
         }
         (function(k, v) {
-          proto[k] = v;
-        })(key, props.proto[key]);
+          Object.defineProperty(this, k, v);
+        }).call(proto, key, Object.getOwnPropertyDescriptor(props.proto, key));
       }
     }
 
@@ -58,8 +54,8 @@ Object.defineProperty(GameObject, 'create', {
       }
 
       (function(k, v) {
-        proto[k] = v;
-      })(key, props);
+        Object.defineProperty(this, k, v);
+      }).call(proto, key, Object.getOwnPropertyDescriptor(props, key));
     }
 
     function Class() {
@@ -78,15 +74,15 @@ Object.defineProperty(GameObject, 'create', {
           continue;
         }
         (function(k, v) {
-          this[k] = v;
-        }).call(this, key, construct[key]);
+          Object.defineProperty(this, k, v);
+        }).call(this, key, Object.getOwnPropertyDescriptor(construct, key));
       }
 
 
       function callAll(_this, method, val) {
         Object.defineProperty(_this, method, {
           enumerable: true,
-          value: function reset() {
+          value: function meth() {
             if(Array.isArray(this.children)) {
               for(var i in this.children) {
                 (function() {
@@ -120,8 +116,8 @@ Object.defineProperty(GameObject, 'create', {
 
     for(var key in proto) {
       (function(k, v) {
-        Class.prototype[k] = v;
-      })(key, proto[key]);
+        Object.defineProperty(this, k, v);
+      }).call(Class.prototype, key, Object.getOwnPropertyDescriptor(proto, key));
     }
 
     Class.toString = function() {
@@ -132,7 +128,7 @@ Object.defineProperty(GameObject, 'create', {
   }
 });
 
-var globalVar = {};
+var globalVar;
 
 function appendGlobal(obj) {
   Object.defineProperty(obj, 'global', {
