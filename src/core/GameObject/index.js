@@ -2,167 +2,158 @@
 var utils = require('./../../utils/core');
 var Game = require('./../Game');
 
-function GameObject(base, props, args) {
-  return GameObject.create(base, props, args);
-}
+var gl;
 
-Object.defineProperty(GameObject, 'create', {
+Object.defineProperty(GameObject, 'global', {
   enumerable: true,
-  value: function create(base, props, args) {
-    
-    if(!props || typeof props !== 'object') {
-      props = Object.create(null);
+  set: function(val) {
+    if(this instanceof Game && val && typeof val === 'object') {
+      gl = val;
     }
-
-    var construct = Object.create(null);
-    var proto = Object.create(null);
-
-    //get all the props that will be declared on the constructor
-    if(props.construct && typeof props.construct === 'object') {
-      for(var key in props.construct) {
-        if(utils.isOneOf(key, ['room', 'roomlist', 'global'])) {
-          continue;
-        }
-        (function(k, v) {
-          Object.defineProperty(this, k, v);
-        }).call(construct, key, Object.getOwnPropertyDescriptor(props.construct, key));
-      }
-    }
-
-    
-
-    //get all the props that will be declared on the prototype
-    if(props.proto && typeof props.proto === 'object') {
-      for(var key in props.proto) {
-        if(utils.isOneOf(key, ["setup", "reset", "room_end", "update"])) {
-          construct[key] = props.proto[key];
-        }
-        else if(utils.isOneOf(key, ['room', 'roomlist', 'global'])) {
-          continue;
-        }
-        (function(k, v) {
-          Object.defineProperty(this, k, v);
-        }).call(proto, key, Object.getOwnPropertyDescriptor(props.proto, key));
-      }
-    }
-    
-    //others will be declared on the prototype
-    for(var key in props) {
-      if(utils.isOneOf(key, ['room', 'roomlist', 'global', 'proto', 'construct'])) {
-        continue;
-      }
-      else if(utils.isOneOf(key, ["setup", "reset", "room_end", "update"])) {
-        construct[key] = props[key];
-      }
-
-      (function(k, v) {
-        Object.defineProperty(this, k, v);
-      }).call(proto, key, Object.getOwnPropertyDescriptor(props, key));
-    }
-
-    function Class() {
-
-      //calling super constructor
-      if(typeof base === 'function') {
-        base.call(this);
-      }
-      else if(base && typeof base === 'object' && base.constructor) {
-        base.constructor.call(this);
-      }
-
-      //declare all constructive props
-      for(var key in construct) {
-        if(utils.isOneOf(key, ["setup", "reset", "room_end", "update"])) {
-          continue;
-        }
-        (function(k, v) {
-          Object.defineProperty(this, k, v);
-        }).call(this, key, Object.getOwnPropertyDescriptor(construct, key));
-      }
-      
-      function callAll(_this, method, val) {
-        Object.defineProperty(_this, method, {
-          enumerable: true,
-          value: function meth() {
-            if(Array.isArray(this.children)) {
-              for(var i in this.children) {
-                (function() {
-                  if(typeof this.reset === 'function') {
-                    this.reset.call(this);
-                  }
-                }).call(this.children[i]);
-              }
-            }
-            if(typeof val === 'function') {
-              val.call(this);
-            }
-          }.bind(_this)
-        });
-      }
-
-      //creating the reserved methods
-      callAll(this, "reset", construct.reset);
-      callAll(this, "update", construct.update);
-      callAll(this, "room_end",construct.room_end);
-
-      //running the setup method
-      if(typeof construct.setup === 'function') {
-        construct.setup.call(this);
-      }
-    }
-
-    Object.defineProperty(Class, 'prototype', {
-      value: Object.create(base ? base.prototype || base.__proto__ || null : null)
-    });
-
-    for(var key in proto) {
-      (function(k, v) {
-        Object.defineProperty(this, k, v);
-      }).call(Class.prototype, key, Object.getOwnPropertyDescriptor(proto, key));
-    }
-
-    Class.toString = function() {
-      return "GameObject() { [varying code] }";
-    }
-
-    return appendGlobal(Class);
   }
 });
 
-var globalVar;
+function GameObject(obj) {
+  if(this instanceof GameObject) {
+    throw SyntaxError("Game Object cannot be called as a constructor.");
+  }
 
-function appendGlobal(obj) {
-  Object.defineProperty(obj, 'global', {
-    enumerable: true,
-    get: function() {
-      return globalVar;
-    }
-  });
+  if(!obj || typeof obj !== 'object') {
+    throw TypeError("Game object must be an object.");
+  }
 
-  Object.defineProperty(obj, 'room', {
-    enumerable: true,
-    get: function() {
-      return globalVar.room;
-    }
-  });
+  var reset = update = room_end = utils.undefined;
 
-  Object.defineProperty(obj, 'roomlist', {
-    enumerable: true,
-    get: function() {
-      return globalVar.roomlist;
+  if(typeof obj.reset === 'function') {
+    reset = obj.reset;
+    if(!(delete obj.reset)) {
+      throw Error("Game object's reset cannot be overriden.");
     }
-  });
-  
+    obj.reset = function() {
+      if(Array.isArray(this.children)) {
+        for(var c in this.children) {
+          (function(){
+            typeof this.reset === 'function' && this.reset.call(this);
+          }).call(this.children[c]);
+        }
+      }
+    }.bind(obj);
+  }
+
+  if(typeof obj.update === 'function') {
+    update = obj.update;
+    if(!(delete obj.update)) {
+      throw Error("Game object's update cannot be overriden.");
+    }
+    obj.update = function() {
+      if(Array.isArray(this.children)) {
+        for(var c in this.children) {
+          (function(){
+            typeof this.update === 'function' && this.update.call(this);
+          }).call(this.children[c]);
+        }
+      }
+    }.bind(obj);
+  }
+
+  if(typeof obj.room_end === 'function') {
+    room_end = obj.room_end;
+    if(!(delete obj.room_end)) {
+      throw Error("Game object's room_end cannot be overriden.");
+    }
+    obj.room_end = function() {
+      if(Array.isArray(this.children)) {
+        for(var c in this.children) {
+          (function(){
+            typeof this.room_end === 'function' && this.room_end.call(this);
+          }).call(this.children[c]);
+        }
+      }
+    }.bind(obj);
+  }
+
+  if(!delete obj.room) {
+    throw Error("Game object's room cannot be overridden.");
+  }
+  else {
+    Object.defineProperty(obj, 'room', {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      get: function() {
+        return gl.room;
+      }
+    })
+  }
+
+  if(!delete obj.roomlist) {
+    throw Error("Game object's roomlist cannot be overridden.");
+  }
+  else {
+    Object.defineProperty(obj, 'roomlist', {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      get: function() {
+        return gl.roomlist;
+      }
+    })
+  }
+
+  if(!delete obj.global) {
+    throw Error("Game object's global cannot be overridden.");
+  }
+  else {
+    Object.defineProperty(obj, 'room', {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      get: function() {
+        return gl;
+      }
+    })
+  }
+
   return obj;
 }
 
-Object.defineProperty(GameObject, 'setGlobal', {
+
+Object.defineProperty(GameObject, 'prepend', {
   enumerable: true,
-  value: function setGlobal(gl) {
-    if(gl && typeof gl === 'object') {
-      globalVar = gl;
+  value: function create(base, props, args) {
+
+    //setting default values
+    if(typeof base === 'undefined') {
+      base = null;
     }
+    if(!props || typeof props !== 'object') {
+      props = Object.create(null);
+    }
+    if(!Array.isArray(args)) {
+      args = [args];
+    }
+
+    //sorting props as construct or proto 
+    var proto = Object.create(null);
+    var construct = Object.create(null);
+    var special = Object.create(null);
+
+    //special & global keys
+    var splkeys = ["reset", "update", "room_end", "setup"];
+    var glkeys = ["room", "roomlist", "global"];
+
+    //setter function
+    function set(obj, k, pr) {
+      Object.defineProperty(obj, k, pr);
+    }
+
+    //for prototype first
+    if(props.proto && typeof props.proto === 'object') {
+      
+    }
+
   }
 });
+
 
 module.exports = GameObject;
