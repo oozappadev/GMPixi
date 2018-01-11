@@ -147,10 +147,62 @@ Object.defineProperty(GameObject, 'prepend', {
       Object.defineProperty(obj, k, pr);
     }
 
-    //for prototype first
+    // for prototype first
     if(props.proto && typeof props.proto === 'object') {
-      
+      for(var k in props.proto) {
+        if(utils.isOneOf(k, splkeys)) {
+          set(special, k, Object.getOwnPropertyDescriptor(props.proto, k));
+        }
+        else if(utils.isOneOf(glkeys)) {
+          continue;
+        }
+        set(proto, k, Object.getOwnPropertyDescriptor(props.proto, k));
+      }
     }
+
+    // for prototype first
+    if(props.proto && typeof props.proto === 'object') {
+      for(var k in props.proto) {
+        if(utils.isOneOf(k, splkeys)) {
+          set(special, k, Object.getOwnPropertyDescriptor(props.proto, k));
+        }
+        else if(utils.isOneOf(glkeys)) {
+          continue;
+        }
+        set(proto, k, Object.getOwnPropertyDescriptor(props.proto, k));
+      }
+      delete props.proto;
+    }
+
+    // for constructor next
+    if(props.construct && typeof props.construct === 'object') {
+      for(var k in props.construct) {
+        if(utils.isOneOf(k, splkeys)) {
+          set(special, k, Object.getOwnPropertyDescriptor(props.construct, k));
+        }
+        else if(utils.isOneOf(glkeys)) {
+          continue;
+        }
+        set(construct, k, Object.getOwnPropertyDescriptor(props.construct, k));
+      }
+      delete props.construct;
+    }
+
+    // for others will be going to prototype
+    var invalid = glkeys.concat(["construct", "proto"]);
+    if(props && typeof props === 'object') {
+      for(var k in props) {
+        if(utils.isOneOf(k, splkeys)) {
+          set(special, k, Object.getOwnPropertyDescriptor(props.construct, k));
+        }
+        else if(utils.isOneOf(k, invalid)) {
+          continue;
+        }
+        set(proto, k, Object.getOwnPropertyDescriptor(props, k));
+      }
+      delete props;
+    }
+
 
   }
 });
