@@ -116,42 +116,94 @@ function GameObject(obj) {
 }
 
 
-// Object.defineProperty(GameObject, 'create', {
-//   enumerable: true,
-//   value: function create(base, props, args) {
+Object.defineProperty(GameObject, 'prepend', {
+  enumerable: true,
+  value: function create(base, props, args) {
 
-//     //setting default values
-//     if(typeof base === 'undefined') {
-//       base = null;
-//     }
-//     if(!props || typeof props !== 'object') {
-//       props = Object.create(null);
-//     }
-//     if(!Array.isArray(args)) {
-//       args = [args];
-//     }
+    //setting default values
+    if(typeof base === 'undefined') {
+      base = null;
+    }
+    if(!props || typeof props !== 'object') {
+      props = Object.create(null);
+    }
+    if(!Array.isArray(args)) {
+      args = [args];
+    }
 
-//     //sorting props as construct or proto 
-//     var proto = Object.create(null);
-//     var construct = Object.create(null);
-//     var special = Object.create(null);
+    //sorting props as construct or proto 
+    var proto = Object.create(null);
+    var construct = Object.create(null);
+    var special = Object.create(null);
 
-//     //special & global keys
-//     var splkeys = ["reset", "update", "room_end", "setup"];
-//     var glkeys = ["room", "roomlist", "global"];
+    //special & global keys
+    var splkeys = ["reset", "update", "room_end", "setup"];
+    var glkeys = ["room", "roomlist", "global"];
 
-//     //setter function
-//     function set(obj, k, pr) {
-//       Object.defineProperty(obj, k, pr);
-//     }
+    //setter function
+    function set(obj, k, pr) {
+      Object.defineProperty(obj, k, pr);
+    }
 
-//     //for prototype first
-//     if(props.proto && typeof props.proto === 'object') {
-      
-//     }
+    // for prototype first
+    if(props.proto && typeof props.proto === 'object') {
+      for(var k in props.proto) {
+        if(utils.isOneOf(k, splkeys)) {
+          set(special, k, Object.getOwnPropertyDescriptor(props.proto, k));
+        }
+        else if(utils.isOneOf(glkeys)) {
+          continue;
+        }
+        set(proto, k, Object.getOwnPropertyDescriptor(props.proto, k));
+      }
+    }
 
-//   }
-// });
+    // for prototype first
+    if(props.proto && typeof props.proto === 'object') {
+      for(var k in props.proto) {
+        if(utils.isOneOf(k, splkeys)) {
+          set(special, k, Object.getOwnPropertyDescriptor(props.proto, k));
+        }
+        else if(utils.isOneOf(glkeys)) {
+          continue;
+        }
+        set(proto, k, Object.getOwnPropertyDescriptor(props.proto, k));
+      }
+      delete props.proto;
+    }
+
+    // for constructor next
+    if(props.construct && typeof props.construct === 'object') {
+      for(var k in props.construct) {
+        if(utils.isOneOf(k, splkeys)) {
+          set(special, k, Object.getOwnPropertyDescriptor(props.construct, k));
+        }
+        else if(utils.isOneOf(glkeys)) {
+          continue;
+        }
+        set(construct, k, Object.getOwnPropertyDescriptor(props.construct, k));
+      }
+      delete props.construct;
+    }
+
+    // for others will be going to prototype
+    var invalid = glkeys.concat(["construct", "proto"]);
+    if(props && typeof props === 'object') {
+      for(var k in props) {
+        if(utils.isOneOf(k, splkeys)) {
+          set(special, k, Object.getOwnPropertyDescriptor(props.construct, k));
+        }
+        else if(utils.isOneOf(k, invalid)) {
+          continue;
+        }
+        set(proto, k, Object.getOwnPropertyDescriptor(props, k));
+      }
+      delete props;
+    }
+
+
+  }
+});
 
 
 module.exports = GameObject;
