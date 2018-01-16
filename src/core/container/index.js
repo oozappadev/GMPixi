@@ -3,8 +3,28 @@ var GameObject = require('./../GameObject');
 var math = require('./../../utils/math');
 require('pixi.js');
 
-function Container() {
-  PIXI.Container.apply(this, arguments);
+function Container(props) {
+  PIXI.Container.apply(this, Array.prototype.slice.call(arguments, 1));
+
+  if(!props || typeof props !== 'object') {
+    props = Object.create(null);
+  }
+  
+  var setup = props.setup;
+  props && delete props.setup;
+
+  for(var key in props) {
+    (function(k, v) {
+      this[k] = typeof v === 'function'
+          ? v.bind(this) : v;
+    }).call(this, key, props[key]);
+  }
+
+  GameObject(this);
+
+  if(typeof setup === 'function') {
+    setup.call(this);
+  }
 }
 
 Object.defineProperty(Container, 'prototype', {

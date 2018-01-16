@@ -13,6 +13,7 @@ Object.defineProperty(GameObject, 'global', {
   }
 });
 
+
 function GameObject(obj) {
   if(this instanceof GameObject) {
     throw SyntaxError("Game Object cannot be called as a constructor.");
@@ -37,6 +38,7 @@ function GameObject(obj) {
           }).call(this.children[c]);
         }
       }
+      typeof reset === 'function' && reset.call(this);
     }.bind(obj);
   }
 
@@ -53,6 +55,7 @@ function GameObject(obj) {
           }).call(this.children[c]);
         }
       }
+      typeof update === 'function' && update.call(this);
     }.bind(obj);
   }
 
@@ -69,6 +72,7 @@ function GameObject(obj) {
           }).call(this.children[c]);
         }
       }
+      typeof room_end === 'function' && room_end.call(this);
     }.bind(obj);
   }
 
@@ -78,8 +82,6 @@ function GameObject(obj) {
   else {
     Object.defineProperty(obj, 'room', {
       enumerable: true,
-      configurable: true,
-      writable: true,
       get: function() {
         return gl.room;
       }
@@ -92,8 +94,6 @@ function GameObject(obj) {
   else {
     Object.defineProperty(obj, 'roomlist', {
       enumerable: true,
-      configurable: true,
-      writable: true,
       get: function() {
         return gl.roomlist;
       }
@@ -104,10 +104,8 @@ function GameObject(obj) {
     throw Error("Game object's global cannot be overridden.");
   }
   else {
-    Object.defineProperty(obj, 'room', {
+    Object.defineProperty(obj, 'global', {
       enumerable: true,
-      configurable: true,
-      writable: true,
       get: function() {
         return gl;
       }
@@ -118,42 +116,42 @@ function GameObject(obj) {
 }
 
 
-Object.defineProperty(GameObject, 'prepend', {
-  enumerable: true,
-  value: function create(base, props, args) {
+// Object.defineProperty(GameObject, 'create', {
+//   enumerable: true,
+//   value: function create(base, props, args) {
 
-    //setting default values
-    if(typeof base === 'undefined') {
-      base = null;
-    }
-    if(!props || typeof props !== 'object') {
-      props = Object.create(null);
-    }
-    if(!Array.isArray(args)) {
-      args = [args];
-    }
+//     //setting default values
+//     if(typeof base === 'undefined') {
+//       base = null;
+//     }
+//     if(!props || typeof props !== 'object') {
+//       props = Object.create(null);
+//     }
+//     if(!Array.isArray(args)) {
+//       args = [args];
+//     }
 
-    //sorting props as construct or proto 
-    var proto = Object.create(null);
-    var construct = Object.create(null);
-    var special = Object.create(null);
+//     //sorting props as construct or proto 
+//     var proto = Object.create(null);
+//     var construct = Object.create(null);
+//     var special = Object.create(null);
 
-    //special & global keys
-    var splkeys = ["reset", "update", "room_end", "setup"];
-    var glkeys = ["room", "roomlist", "global"];
+//     //special & global keys
+//     var splkeys = ["reset", "update", "room_end", "setup"];
+//     var glkeys = ["room", "roomlist", "global"];
 
-    //setter function
-    function set(obj, k, pr) {
-      Object.defineProperty(obj, k, pr);
-    }
+//     //setter function
+//     function set(obj, k, pr) {
+//       Object.defineProperty(obj, k, pr);
+//     }
 
-    //for prototype first
-    if(props.proto && typeof props.proto === 'object') {
+//     //for prototype first
+//     if(props.proto && typeof props.proto === 'object') {
       
-    }
+//     }
 
-  }
-});
+//   }
+// });
 
 
 module.exports = GameObject;
